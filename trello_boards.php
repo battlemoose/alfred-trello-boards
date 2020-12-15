@@ -1,5 +1,11 @@
 <?php
 error_reporting(0);
+stream_context_set_default([
+	'http' => [
+		// 'proxy' => 'localhost:8888',
+		'protocol_version' => 1.1
+	]
+]);
 
 $config = json_decode(file_get_contents('config.json'));
 
@@ -22,7 +28,7 @@ for ($i=0; $i < count($boards); $i++) {
 	$items[$i]->icon->path = $filename;
 
 	if ($boards[$i]->closed == true) {
-		$items[$i]->title = "(Closed) " . $items[$i]->title;
+		$items[$i]->title = "[Closed] " . $items[$i]->title;
 	}
 }
 
@@ -43,8 +49,9 @@ function downloadBoardThumb($board) {
 
 		$images = $board->prefs->backgroundImageScaled;
 		for ($i=0; $i < count($images); $i++) { 
-			if ($images[$i]->width == 480 && $images[$i]->height == 480) {
+			if ($images[$i]->width >= 100) {
 				$thumbUrl = $images[$i]->url;
+				break;
 			}
 		}
 
